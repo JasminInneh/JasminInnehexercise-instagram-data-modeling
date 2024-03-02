@@ -6,27 +6,39 @@ from sqlalchemy import create_engine
 from eralchemy2 import render_er
 
 Base = declarative_base()
+class User(Base):
+    __tablename__= "user"
+    id=Column(Integer, primary_key = True)
+    name = Column(String(60), nullable= False)
+    post_id =  Column(Integer, ForeignKey("post.id"))
 
-class Person(Base):
-    __tablename__ = 'person'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+class Post(Base):
+    __tablename__= "post"
+    id=Column(Integer, primary_key = True)
+    content = Column(String(60), nullable= False)
+    user_id =  Column(Integer, ForeignKey("user.id"))
 
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+class Comment(Base):
+    __tablename__= "comment"
+    id=Column(Integer, primary_key = True)
+    comment = Column(String(60), nullable= False)
+    post_id =  Column(Integer, ForeignKey("post.id"))
+    commenter = relationship("Follower", backref="comment")
 
-    def to_dict(self):
-        return {}
+class Reaction(Base):
+    __tablename__= "reaction"
+    id=Column(Integer, primary_key = True)
+    type = Column(String(60), nullable= False)
+    post_id =  Column(Integer, ForeignKey("post.id"))
+    reactor = relationship("Follower", backref="reaction")
+
+class Followers(Base):
+    __tablename__= "followers"
+    id=Column(Integer, primary_key = True)
+    comment_id = Column(String(60), ForeignKey("comment.id"))
+    following =  Column(Integer, ForeignKey("user.id"))
+    reaction_id = Column(String(60), ForeignKey("reaction.id"))
+
 
 ## Draw from SQLAlchemy base
 try:
